@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "id": "harbor",
+  "title": "Les archives du port",
+  "player": "player",
+  "modules": ["core", "inventory", "economy", "chance", "abilities", "memory", "progression", "combat"],
+  "records": {
+    "locations": [
+      {"id": "port", "name": "Port des Brumes", "description": "Un quai, une boutique et un ancien bureau de navigation."},
+      {"id": "hill", "name": "Colline du phare", "description": "Un phare domine le port."}
+    ],
+    "entities": [
+      {"id": "player", "name": "Voyageur", "kind": "player", "location": "port", "personality": ["curieux"]},
+      {"id": "merchant", "name": "Mara", "kind": "npc", "location": "port", "description": "Une marchande installe ses objets.", "personality": ["pragmatique"]},
+      {"id": "scribe", "name": "Éloi", "kind": "npc", "location": "port", "description": "Un scribe examine une carte.", "personality": ["prudent"], "shareable_facts": ["destination"], "topics": ["destination"]},
+      {"id": "scout", "name": "Nora", "kind": "npc", "location": "port", "description": "Une navigatrice attend près du bureau.", "personality": ["réservée"], "shareable_facts": ["destination"], "topics": ["destination"]}
+    ],
+    "routes": [
+      {"id": "path", "name": "Sentier du phare", "origin": "port", "destination": "hill", "location": "port", "duration": 900},
+      {"id": "return", "name": "Retour au port", "origin": "hill", "destination": "port", "location": "hill", "duration": 900},
+      {"id": "sky", "name": "Passage aérien", "origin": "port", "destination": "hill", "location": "port", "duration": 900, "required_ability": "flight"}
+    ],
+    "items": [
+      {"id": "dagger", "name": "Dague", "description": "Une dague ordinaire en acier.", "owner": "merchant", "holder": "merchant", "actor": "merchant", "location": "port"},
+      {"id": "boat", "name": "Barque", "description": "Une petite barque de pêche.", "owner": "merchant", "holder": "merchant", "actor": "merchant", "location": "port"}
+    ],
+    "resources": [
+      {"id": "player:coin", "actor": "player", "resource": "coin", "value": 100},
+      {"id": "merchant:coin", "actor": "merchant", "resource": "coin", "value": 50},
+      {"id": "player:stamina", "actor": "player", "resource": "stamina", "value": 20},
+      {"id": "scribe:pages", "actor": "scribe", "resource": "pages", "value": 0}
+    ],
+    "attributes": [
+      {"id": "player:hp", "actor": "player", "attribute": "hp", "value": 30, "minimum": 0, "maximum": 30},
+      {"id": "merchant:hp", "actor": "merchant", "attribute": "hp", "value": 25, "minimum": 0, "maximum": 25},
+      {"id": "player:focus", "actor": "player", "attribute": "focus", "value": 1, "minimum": 0, "maximum": 10}
+    ],
+    "offers": [
+      {"id": "dagger-sale", "actor": "merchant", "subject": "dagger", "item": "dagger", "location": "port", "price": 25, "currency": "coin", "status": "active"},
+      {"id": "boat-sale", "actor": "merchant", "subject": "boat", "item": "boat", "location": "port", "price": 400, "currency": "coin", "status": "active"}
+    ],
+    "abilities": [
+      {"id": "flight", "name": "Vol temporaire", "actors": ["player"], "duration": 720, "cost": {"resource": "stamina", "amount": 2}}
+    ],
+    "checks": [
+      {"id": "search", "description": "Fouiller les débris pour trouver une pièce.", "location": "port", "probability": 0.45, "duration": 30, "cost": {"resource": "stamina", "amount": 1}, "reward": {"resource": "coin", "amount": 1}}
+    ],
+    "facts": [
+      {"id": "notice", "statement": "Horaire du bureau de navigation", "value": "Le bureau ouvre au lever du soleil.", "location": "port", "public": true},
+      {"id": "destination", "statement": "Destination du navire des archives", "value": "Le navire part pour l'île de Verre.", "location": "port", "public": false},
+      {"id": "gm-secret", "statement": "Cache du maître du jeu", "value": "SECRET_INACCESSIBLE_AU_JOUEUR", "location": "hill", "public": false}
+    ],
+    "beliefs": [
+      {"id": "scribe:destination", "actor": "scribe", "subject": "destination", "statement": "Destination du navire des archives", "value": "Le navire part pour l'île de Verre.", "source": {"kind": "initial", "reason": "lecture du registre"}, "acquired_at": 0, "certainty": "reported"}
+    ],
+    "relations": [
+      {"id": "scribe:scout", "actor": "scribe", "subject": "scout", "familiarity": 40, "description": "collègues", "updated_at": 0}
+    ],
+    "opportunities": [
+      {"id": "quay-conversation", "actor": "scribe", "subject": "scout", "fact": "destination", "location": "port", "start": 100, "due": 300, "probability": 1.0, "minimum_familiarity": 20, "status": "pending"}
+    ],
+    "behaviors": [
+      {"id": "copy-pages", "actor": "scribe", "resource": "pages", "interval": 60, "amount": 1, "capacity": 100, "last_at": 0, "status": "active"}
+    ],
+    "training": [
+      {"id": "meditation", "description": "Méditer pour améliorer sa concentration.", "location": "hill", "duration": 60, "attribute": "focus", "gain": 1}
+    ],
+    "experiences": [
+      {"id": "watch-sea", "description": "Observer la mer depuis le phare.", "location": "hill", "duration": 120, "personality_add": ["attentif aux horizons"], "memory": "Un moment de calme au sommet du phare."}
+    ],
+    "moves": [
+      {"id": "strike", "name": "Coup simple", "actors": ["player"], "probability": 0.75, "damage": 4, "duration": 5, "cost": {"resource": "stamina", "amount": 1}}
+    ]
+  }
+}
