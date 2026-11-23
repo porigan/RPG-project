@@ -1,6 +1,6 @@
 # État d'avancement
 
-Version de développement : 0.1.0. Le moteur, les deux univers de configuration, l'interface terminal et les tests sont présents dans le dépôt. Ce bilan distingue les primitives fonctionnelles d'un moteur RPG universel abouti.
+Version de développement : 0.2.0. Le moteur, les deux univers, l'interface terminal et une interface MCP utilisant le SDK officiel sont présents. ChatGPT peut être le seul maître du jeu ; aucune API de modèle n'est requise par l'interface MCP. La disponibilité effective dans la conversation choisie doit être vérifiée dans l'application après configuration.
 
 ## Implémenté et couvert par les tests
 
@@ -23,6 +23,8 @@ Version de développement : 0.1.0. Le moteur, les deux univers de configuration,
 Les tests générant des séquences d'actions sont déterministes. Ils complètent les scénarios ciblés ; ils ne constituent pas une preuve exhaustive de toutes les combinaisons de règles possibles.
 
 ## Limites réelles
+
+L'intégration Windows et ses restrictions de surface sont documentées dans [CHATGPT.md](CHATGPT.md). La liaison MCP n'importe pas les anciennes aventures depuis l'historique ChatGPT et ne transforme pas les primitives actuelles en règles complètes pour un univers non implémenté.
 
 1. **Aucun modèle IA réel validé dans cet environnement.** Il manque un endpoint et un modèle configurés, ainsi qu'une clé si le fournisseur l'exige. Les tests HTTP utilisent des réponses contrôlées.
 2. **Autonomie déclarative.** Les PNJ ont des occasions de communication, des productions périodiques et des déplacements programmés. Ils n'ont pas encore de planificateur général d'objectifs ou de dialogue libre piloté par IA.

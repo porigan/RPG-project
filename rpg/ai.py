@@ -12,25 +12,8 @@ import urllib.request
 from dataclasses import dataclass
 from typing import Protocol
 
-from .model import InvalidAction, canonical, integer
-
-ACTION_ARGS = {
-    "observe": (),
-    "wait": ("seconds",),
-    "travel": ("route",),
-    "buy": ("offer", "max_price"),
-    "give": ("item", "target"),
-    "attempt": ("check",),
-    "activate": ("ability",),
-    "talk": ("target", "topic"),
-    "tell": ("target", "fact"),
-    "train": ("training",),
-    "experience": ("experience",),
-    "attack": ("target", "move"),
-    "befriend": ("encounter",),
-    "accept_quest": ("quest",),
-    "claim_quest": ("quest",),
-}
+from .contracts import ACTION_ARGS, validate_action
+from .model import InvalidAction, canonical
 
 PROPOSAL_SCHEMA = {
     "type": "object",
@@ -154,54 +137,9 @@ def validate_proposal(value, text, view):
         if not isinstance(step, dict) or set(step) != {"action", "args", "source"}:
             raise InvalidAction("Étape IA invalide.")
         action, args, source = step["action"], step["args"], step["source"]
-        if (
-            not isinstance(action, str)
-            or action not in ACTION_ARGS
-            or action not in view["actions"]
-            or not isinstance(args, dict)
-        ):
-            raise InvalidAction("Action IA non autorisée.")
         if not isinstance(source, str) or not source.strip() or source not in text:
             raise InvalidAction("Chaque étape doit citer l'intention explicite du joueur.")
-        if set(args) - set(ACTION_ARGS[action]):
-            raise InvalidAction("L'IA a proposé des arguments non autorisés.")
-        required = set(ACTION_ARGS[action]) - ({"topic"} if action == "talk" else set())
-        if required - set(args):
-            raise InvalidAction("Arguments IA manquants.")
-        for key, arg in args.items():
-            if key in {"seconds", "max_price"}:
-                integer(arg, key, 1 if key == "seconds" else 0, 604800 if key == "seconds" else 10**12)
-            elif not isinstance(arg, str) or not arg or len(arg) > 200:
-                raise InvalidAction("Identifiant d'action IA invalide.")
-        reference_categories = {
-            "route": "routes",
-            "offer": "offers",
-            "check": "checks",
-            "ability": "abilities",
-            "training": "training",
-            "experience": "experiences",
-            "move": "moves",
-            "encounter": "encounters",
-            "quest": "quests",
-        }
-        for key, collection in reference_categories.items():
-            if key in args and args[key] not in {entry["id"] for entry in view[collection]}:
-                raise InvalidAction("L'IA a proposé un élément absent du contexte autorisé.")
-        if "target" in args and args["target"] not in {entry["id"] for entry in view["nearby"]}:
-            raise InvalidAction("L'IA a proposé un personnage inaccessible.")
-        if "fact" in args and args["fact"] not in {entry["id"] for entry in view["beliefs"]}:
-            raise InvalidAction("L'IA ne peut transmettre une connaissance inconnue du joueur.")
-        if "topic" in args:
-            target = next(entry for entry in view["nearby"] if entry["id"] == args["target"])
-            topics = set(target.get("topics", [])) | {entry["id"] for entry in view["beliefs"]}
-            if args["topic"] not in topics:
-                raise InvalidAction("Le sujet proposé est absent du contexte autorisé.")
-        if "item" in args:
-            known_items = {entry["id"] for entry in view["inventory"]} | {
-                entry["item"] for entry in view["offers"]
-            }
-            if args["item"] not in known_items:
-                raise InvalidAction("L'IA a proposé un objet inconnu.")
+        validate_action(action, args, view)
         cleaned.append({"action": action, "args": args})
     return Proposal(cleaned, clarification, view["revision"])
 

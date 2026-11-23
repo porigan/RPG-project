@@ -10,4 +10,6 @@ dist/
 .env
 .coverage
 .devtools/
+.rpg-bridge/
+*.bridge-key
 

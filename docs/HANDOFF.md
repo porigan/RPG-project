@@ -1,5 +1,19 @@
 # Reprise du développement
 
+## Intégration ChatGPT, version 0.2
+
+L'utilisateur souhaite garder ChatGPT comme seul MJ dans ses conversations et ne pas payer d'API de modèle. Il a précisé : compte personnel Plus/Pro, application Windows. La voie retenue est MCP STDIO dans le client local, sans tunnel ni serveur public. Voir CHATGPT.md pour les limites du Chat standard/cloud et les restrictions MCP web vérifiées dans les sources officielles le 23 novembre 2026.
+
+`bridge.py` lie chaque connexion à une sauvegarde, une branche et un joueur. Les propositions sont signées localement et expirent ; les lectures sont réellement en SQLite mode=ro. `mcp_server.py` expose trois lectures et une écriture explicitement annotée, avec le SDK officiel mcp 2.3.0 en dépendance facultative. `contracts.py` partage les validations entre adaptateurs, sans importer de modèle.
+
+Les tests MCP réels nécessitent l'option `.[mcp]`, un lancement de sous-processus autorisé et le loopback pour HTTP. Les tests lancés dans le bac à sable Windows pouvaient rester bloqués ; ceux hors bac à sable communiquent réellement. Ne pas les remplacer par des mocks ou prétendre qu'ils constituent une validation dans le compte ChatGPT.
+
+`tools/configure_chatgpt.ps1` prépare la configuration et peut inscrire le serveur via le client natif avec `-Register`. Ne pas écraser un serveur déjà enregistré. Ne pas fermer/redémarrer l'application au milieu de la tâche. L'appel ChatGPT après redémarrage reste le test utilisateur décisif.
+
+La sauvegarde `partie.db` présente dans le dossier est une donnée utilisateur exclue de Git. Les essais d'achat utilisent des bases temporaires. Le répertoire `.rpg-bridge` contient les clés et sauvegardes locales et doit rester exclu du dépôt.
+
+L'inscription globale `rpg-engine` a été effectuée via `codex mcp add`. Ne pas relancer -Register sans vérifier cette entrée. Le probe utilisant sa configuration a découvert les quatre outils, lu l'état réel et confirmé une révision inchangée. Une copie préalable et une sauvegarde au démarrage ont été produites. Aucun appel d'écriture n'a été joué sur la sauvegarde utilisateur pendant cette intégration. Le catalogue du modèle actif ne contenait pas encore les outils après inscription ; demander le contrôle après redémarrage plutôt que prétendre la conversation déjà reliée.
+
 ## Point de départ
 
 Le dépôt initial contenait uniquement un README. La branche `codex/rpg-engine` ajoute un moteur Python sans dépendance d'exécution externe, une suite `unittest`, deux univers JSON, un terminal et des transports IA configurables.

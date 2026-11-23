@@ -2,7 +2,9 @@
 
 Moteur RPG persistant et modulaire en Python, avec une interface terminal en français et une frontière explicite entre propositions IA, règles et modifications du monde.
 
-Il s'agit d'une première version fonctionnelle de développement. Le moteur possède des tests techniques reproductibles ; l'intégration avec un véritable modèle de langage reste à valider avec un serveur configuré. Le mode local fonctionne sans IA.
+Il s'agit d'une version fonctionnelle de développement. **Pour jouer avec ChatGPT comme maître du jeu, sans API de modèle supplémentaire, utilisez l'[intégration MCP locale Windows](docs/CHATGPT.md).** Le protocole MCP est testé avec le client officiel ; la visibilité dans votre conversation nécessite encore la connexion du client et son contrôle après redémarrage.
+
+L'adaptateur de modèle HTTP et le jeu terminal ci-dessous restent des options distinctes, non nécessaires à l'intégration ChatGPT.
 
 ## Commencer à jouer
 
@@ -102,6 +104,7 @@ L'installation du paquet peut télécharger setuptools pour sa construction. Le 
 
 ## Documentation
 
+- [Connecter le moteur à ChatGPT sur Windows](docs/CHATGPT.md).
 - [Architecture et invariants](docs/ARCHITECTURE.md).
 - [Créer un univers ou un module](docs/AUTHORING.md).
 - [Intégration et limites IA](docs/AI.md).

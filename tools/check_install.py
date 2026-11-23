@@ -45,6 +45,9 @@ def main():
         report = json.loads(run("-m", "rpg", "--db", database, "audit"))
         if not report["ok"]:
             raise AssertionError(report)
+        bridge = json.loads(run("-m", "rpg.mcp_server", "--db", database, "--check"))
+        if not bridge["ready"] or bridge["model_api_required"]:
+            raise AssertionError(bridge)
         print(
             json.dumps(
                 {"installed_package": str(imported), "purchase_and_reopen": "passed", "audit": report},

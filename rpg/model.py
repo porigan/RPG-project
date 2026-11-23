@@ -62,6 +62,7 @@ class Command:
     kind: str
     args: dict[str, Any] = field(default_factory=dict)
     expected_revision: int | None = None
+    provenance: dict[str, Any] | None = None
 
     def identity(self) -> dict[str, Any]:
         identifier(self.id)
@@ -70,10 +71,15 @@ class Command:
         if not isinstance(self.args, dict):
             raise InvalidAction("Les arguments doivent être un objet JSON.")
         try:
-            canonical(self.args)
+            canonical([self.args, self.provenance])
         except (ValueError, TypeError, RecursionError):
             raise InvalidAction("Arguments JSON invalides.") from None
-        return {"actor": self.actor, "kind": self.kind, "args": self.args}
+        identity = {"actor": self.actor, "kind": self.kind, "args": self.args}
+        if self.provenance is not None:
+            if not isinstance(self.provenance, dict):
+                raise InvalidAction("Provenance de commande invalide.")
+            identity["provenance"] = self.provenance
+        return identity
 
 
 class Module(Protocol):

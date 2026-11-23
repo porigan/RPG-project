@@ -63,19 +63,29 @@ CREATE TRIGGER IF NOT EXISTS receipts_no_delete BEFORE DELETE ON receipts
 
 
 class Store:
-    def __init__(self, path: str | Path = ":memory:"):
+    def __init__(self, path: str | Path = ":memory:", *, readonly: bool = False):
         self.path = str(path)
-        self.db = sqlite3.connect(self.path, isolation_level=None, timeout=5)
+        self.readonly = readonly
+        if readonly:
+            if self.path == ":memory:":
+                raise InvalidAction("La lecture seule exige une sauvegarde existante.")
+            self.db = sqlite3.connect(
+                Path(path).resolve().as_uri() + "?mode=ro", uri=True, isolation_level=None, timeout=5
+            )
+        else:
+            self.db = sqlite3.connect(self.path, isolation_level=None, timeout=5)
         self.db.row_factory = sqlite3.Row
         self.db.execute("PRAGMA foreign_keys=ON")
-        self.db.execute("PRAGMA journal_mode=WAL")
-        self.db.execute("PRAGMA synchronous=FULL")
+        if not readonly:
+            self.db.execute("PRAGMA journal_mode=WAL")
+            self.db.execute("PRAGMA synchronous=FULL")
         version = self.db.execute("PRAGMA user_version").fetchone()[0]
-        if version not in (0, SCHEMA_VERSION):
+        if version not in ((SCHEMA_VERSION,) if readonly else (0, SCHEMA_VERSION)):
             self.db.close()
             raise InvalidAction(f"Schéma {version} non pris en charge, attendu {SCHEMA_VERSION}.")
-        self.db.executescript(SCHEMA)
-        self.db.execute(f"PRAGMA user_version={SCHEMA_VERSION}")
+        if not readonly:
+            self.db.executescript(SCHEMA)
+            self.db.execute(f"PRAGMA user_version={SCHEMA_VERSION}")
 
     def close(self) -> None:
         self.db.close()

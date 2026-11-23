@@ -1,5 +1,7 @@
 # Intégration IA
 
+Pour utiliser **ChatGPT dans l'application Windows**, l'adaptateur HTTP de cette page n'est pas nécessaire : voir [l'interface MCP](CHATGPT.md). Elle laisse ChatGPT interpréter et narrer dans la conversation, sans exécuter de second modèle côté moteur.
+
 ## Contrat
 
 Le moteur accepte tout objet implémentant :

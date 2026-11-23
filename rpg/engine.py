@@ -418,6 +418,8 @@ class Engine:
                 "first_seq": meta["revision"] + 1,
                 "last_seq": result["revision"],
             }
+            if command.provenance is not None:
+                context.events[0]["provenance"] = copy.deepcopy(command.provenance)
             self.store.commit_events(branch, context.events, meta["revision"])
             return result
 
