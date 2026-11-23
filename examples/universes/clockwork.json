@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "id": "clockwork",
+  "title": "Le jardin des automates",
+  "player": "researcher",
+  "modules": ["core", "chance", "memory", "creatures", "quests"],
+  "records": {
+    "locations": [
+      {"id": "garden", "name": "Jardin des automates", "description": "Des créatures mécaniques circulent entre des fleurs de cuivre."},
+      {"id": "workshop", "name": "Atelier", "description": "Des outils et des plans couvrent un établi."}
+    ],
+    "entities": [
+      {"id": "researcher", "name": "Chercheuse", "kind": "player", "location": "garden", "personality": ["patiente"]},
+      {"id": "finch", "name": "Cuivre", "kind": "creature", "location": "garden", "description": "Un petit oiseau mécanique observe vos mains.", "personality": ["méfiant"]}
+    ],
+    "routes": [
+      {"id": "to-workshop", "name": "Chemin de l'atelier", "origin": "garden", "destination": "workshop", "location": "garden", "duration": 45},
+      {"id": "to-garden", "name": "Chemin du jardin", "origin": "workshop", "destination": "garden", "location": "workshop", "duration": 45}
+    ],
+    "resources": [
+      {"id": "researcher:energy", "actor": "researcher", "resource": "energy", "value": 12},
+      {"id": "researcher:notes", "actor": "researcher", "resource": "notes", "value": 0}
+    ],
+    "checks": [
+      {"id": "signal", "description": "Tenter de déchiffrer le signal des automates.", "location": "garden", "probability": 0.7, "duration": 20, "cost": {"resource": "energy", "amount": 1}, "once": true}
+    ],
+    "encounters": [
+      {"id": "copper-bird", "name": "Cuivre", "subject": "finch", "location": "garden", "duration": 15, "probability": 0.6, "cost": {"resource": "energy", "amount": 1}}
+    ],
+    "quests": [
+      {"id": "decode", "name": "Comprendre le signal", "description": "Décoder le signal pour consigner une observation scientifique.", "location": "garden", "goal_check": "signal", "reward": {"resource": "notes", "amount": 1}}
+    ],
+    "facts": [
+      {"id": "plaque", "statement": "Plaque du jardin", "value": "Les automates réagissent aux sons réguliers.", "location": "garden", "public": true}
+    ]
+  }
+}
